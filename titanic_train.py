@@ -1,28 +1,30 @@
 import os
 import pandas
+from collections import deque
+
 # read data file
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 filepath = os.path.join(__dir__, "train.csv")
 titanic = pandas.read_csv(filepath)
 # Print the first 5 rows of the dataframe.
-print(titanic.head(10))
+# print(titanic.head(10))
 
 # Replace missing value in "Age" with the median value
 titanic["Age"] = titanic["Age"].fillna(titanic["Age"].median())
-print(titanic.describe())
-
+# print(titanic.describe())
 
 # function to generate tutple used in label assignment
 def packgen(inString):
-    uniquelist = list(titanic[inString].unique())
-    numberlist = list(range(len(uniquelist)))
+    uniquelist = deque(titanic[inString].unique())
+    numberlist = deque(range(len(uniquelist)))
     package = (uniquelist, numberlist)
     return package
+
 # function to assign labels
 def assign(inTuple, remainnumber, assignlabel):
     if len(inTuple[0]) > remainnumber:
-        label = inTuple[0].pop(0)
-        number = inTuple[1].pop(0)
+        label = inTuple[0].popleft()
+        number = inTuple[1].popleft()
         titanic.loc[titanic[assignlabel] == label, assignlabel] = number
         assign(inTuple, remainnumber, assignlabel)
 
