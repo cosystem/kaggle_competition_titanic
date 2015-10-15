@@ -1,6 +1,5 @@
 import os
 import pandas
-
 # read data file
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 filepath = os.path.join(__dir__, "train.csv")
@@ -12,37 +11,29 @@ print(titanic.head(10))
 titanic["Age"] = titanic["Age"].fillna(titanic["Age"].median())
 print(titanic.describe())
 
-# class to assign labels
-class labelassign():
-    # initialized varialbes
-    def __init__(self, inString):
-        self.assignlabel = inString
-        self.uniquelist = list(titanic["Sex"].unique())
-        self.numberlist = list(range(len(self.uniquelist)))
-        self.package = (self.uniquelist, self.numberlist)
 
-    # function to assign labels
-    def assign(self, inTuple, remainnumber):
-        if len(inTuple[0]) > remainnumber:
-            label = inTuple[0].pop(0)
-            number = inTuple[1].pop(0)
-            titanic.loc[titanic[self.assignlabel] == self.assignlabel, self.assignlabel] = number
-            self.assign(inTuple, remainnumber)
-
+# function to generate tutple used in label assignment
+def packgen(inString):
+    uniquelist = list(titanic[inString].unique())
+    numberlist = list(range(len(uniquelist)))
+    package = (uniquelist, numberlist)
+    return package
+# function to assign labels
+def assign(inTuple, remainnumber, assignlabel):
+    if len(inTuple[0]) > remainnumber:
+        label = inTuple[0].pop(0)
+        number = inTuple[1].pop(0)
+        titanic.loc[titanic[assignlabel] == label, assignlabel] = number
+        assign(inTuple, remainnumber, assignlabel)
 
 # Find all the unique genders, and assign label
 print(titanic["Sex"].unique())
-ToAssign = labelassign("Sex")
-ToAssign.assign(ToAssign.package, 0)
+tupleSex=packgen("Sex")
+assign(tupleSex, 0, "Sex")
 print(titanic["Sex"].unique())
-print(ToAssign.package)
-print(type(ToAssign.assignlabel))
-print(ToAssign.uniquelist)
-print(ToAssign.numberlist)
-print(list(titanic["Sex"].unique()))
-print(type(titanic))
+
 # Find all the unique Embark, and assign label
-# print(titanic["Embarked"].unique())
-# tupleEmbar=packgen("Embarked")
-# assign(tupleEmbar, 1, "Embarked")
-# print(titanic["Embarked"].unique())
+print(titanic["Embarked"].unique())
+tupleEmbar=packgen("Embarked")
+assign(tupleEmbar, 1, "Embarked")
+print(titanic["Embarked"].unique())
